@@ -1,0 +1,64 @@
+.loginDiv {
+    width: 598px;
+    height: 319px;
+    margin: 100px auto;
+    border-top: 1px solid #e9e9e9;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.inputBox {
+    width: 480px;
+    height: 38px;
+    float: left;
+    margin-top: 162px;
+    margin-left: 59px;
+    /*border: 3px #2060b6 solid;*/
+    background-color: #ffffff;
+}
+
+.inputBox input {
+    float: left;
+    font-size: 23px;
+    width: 420px;
+    height: 36px;
+    margin-left: 10px;
+    border: none;
+    outline: none;
+}
+
+.eye {
+    float: left;
+    width: 21px;
+    height: 13px;
+    margin-top: 13px;
+    margin-left: 10px;
+}
+
+.eye:hover {
+    cursor: pointer;
+}
+
+.sub_button {
+    width: 185px;
+    height: 39px;
+    border-radius: 20px;
+    margin-top: 231px;
+    margin-left: 207px;
+    background: linear-gradient(to top, #719419, #83b01d);
+}
+
+.lock {
+    float: left;
+    width: 15px;
+    height: 19px;
+    margin-top: 10px;
+    margin-left: 25px;
+}
+
+.unlock {
+    float: left;
+    font-size: 23px;
+    margin-left: 20px;
+    margin-top: 3px;
+    color: white;
+}
