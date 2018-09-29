@@ -4,7 +4,7 @@ import BackGround from '../images/fromBack.png';
 import OpenEye from '../images/eye.png';
 import CloseEye from '../images/closeeye.png';
 import lock from '../images/lockIcon.png';
-import { Modal } from 'antd';
+import DialogModel from "./DialogModel";
 
 
 var BackGroundStyle = {
@@ -43,7 +43,7 @@ class Login extends Component {
         // input.value = "";
         // input.focus();
         let inputValue = this.refs.password.value;
-        if (inputValue ==='123456') {
+        if (inputValue === '123456') {
             const {onloginIn} = this.props;
             onloginIn("text");
             this.props.history.push("/app");
@@ -54,38 +54,29 @@ class Login extends Component {
     }
 
     showModal = () => {
-        this.setState({
-            visible: true,
-        });
+        //调用组件进行通信
+        this.refs.ShowDialog.showModal();
     }
 
     handleOk = (e) => {
-        this.setState({
-            visible: false,
-        });
-
         var input = this.refs.password;
         input.value = "";
         input.focus();
     }
 
     handleCancel = (e) => {
-        this.setState({
-            visible: false,
-        });
     }
 
     render() {
         return (
             <div>
-                <Modal
-                    title="信息提示"
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                >
-                    <p>密码验证错误!</p>
-                </Modal>
+                <DialogModel
+                    ref="ShowDialog"
+                    popHandleCancel={this.handleCancel.bind(this)}
+                    popHandleOk={this.handleOk.bind(this)}
+                    infoText='密码验证错误!'
+                    infoTitle='信息提示'/>
+
                 <div style={BackGroundStyle} className="loginDiv">
                     <div className="inputBox">
                         <input ref="password" type={this.state.openEye ? "text" : "password"}></input>

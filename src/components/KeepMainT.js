@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Table, Input, InputNumber, Popconfirm, Form} from 'antd';
+import {Table, Input, InputNumber, Popconfirm, Form, Divider, message} from 'antd';
 import PopoverShow from "./PopoverShow";
 import reqwest from 'reqwest';
+import DialogModel from './DialogModel';
 
 
 const data = [];
@@ -70,7 +71,12 @@ class EditableCell extends React.Component {
 class KeepMainT extends Component {
     constructor(props) {
         super(props);
-        this.state = {data, editingKey: ''};
+        this.state = {
+            data,
+            editingKey: '',
+            pagination: {pageSize: 11},
+            handleId: ''
+        };
         this.columns = [
             {
                 title: 'Name',
@@ -89,7 +95,6 @@ class KeepMainT extends Component {
             }, {
                 title: 'CreateDate',
                 dataIndex: 'createDate',
-                editable: true,
             }, {
                 title: 'account',
                 dataIndex: 'id',
@@ -101,6 +106,7 @@ class KeepMainT extends Component {
                 title: 'operation',
                 dataIndex: 'operation',
                 render: (text, record) => {
+                    // console.log("record==>", record);
                     const editable = this.isEditing(record);
                     return (
                         <div>
@@ -110,7 +116,7 @@ class KeepMainT extends Component {
                     {form => (
                         <a
                             href="javascript:;"
-                            onClick={() => this.save(form, record.key)}
+                            onClick={() => this.save(form, record.id)}
                             style={{marginRight: 8}}
                         >
                             Save
@@ -119,14 +125,18 @@ class KeepMainT extends Component {
                   </EditableContext.Consumer>
                   <Popconfirm
                       title="Sure to cancel?"
-                      onConfirm={() => this.cancel(record.key)}
+                      onConfirm={() => this.cancel(record.id)}
                   >
                     <a>Cancel</a>
                   </Popconfirm>
                 </span>
                             ) : (
-                                <a onClick={() => this.edit(record.key)}>Edit</a>
+                                <a onClick={() => this.edit(record.id)}>Edit</a>
                             )}
+
+                            <Divider type="vertical"/>
+
+                            <a onClick={() => this.actionDelete(record.id)}>Delete</a>
                         </div>
                     );
                 },
@@ -135,20 +145,21 @@ class KeepMainT extends Component {
     }
 
     isEditing = (record) => {
-        return record.key === this.state.editingKey;
+        return record.id === this.state.editingKey;
     };
 
-    edit(key) {
-        this.setState({editingKey: key});
+    edit(id) {
+        this.setState({editingKey: id});
     }
 
-    save(form, key) {
+    save(form, id) {
         form.validateFields((error, row) => {
             if (error) {
                 return;
             }
             const newData = [...this.state.data];
-            const index = newData.findIndex(item => key === item.key);
+            const index = newData.findIndex(item => id === item.id);
+            this.updateKmMain(id, row);
             if (index > -1) {
                 const item = newData[index];
                 newData.splice(index, 1, {
@@ -167,11 +178,11 @@ class KeepMainT extends Component {
         this.setState({editingKey: ''});
     };
 
-    fetch = (params = {}) => {
+    fetchKmList = (params = {}) => {
         console.log('params:', params);
         this.setState({loading: true});
         reqwest({
-            url: 'http://127.0.0.1:8080/api/main/appearKmList',
+            url: '/api/main/appearKmList',
             method: 'get',
             // data: {
             //     results: 10,
@@ -193,8 +204,69 @@ class KeepMainT extends Component {
         });
     }
 
+    updateKmMain = (id, row) => {
+        var url = '/api/main/updSingleKm';
+        var data = {
+            id: id,
+            name: row.name,
+            link: row.link,
+            comment: row.comment,
+        };
+        fetch(url, {
+            method: 'POST', // or 'PUT'
+            body: JSON.stringify(data), // data can be `string` or {object}!
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).then(res => res.json())
+            .catch(error => console.error('Error:', error))
+            .then(response => console.log('Success:', response));
+    }
+
+    deleteKmMain = (id) => {
+        const dataSource = [...this.state.data];
+        this.setState({data: dataSource.filter(item => item.id !== id)});
+        reqwest({
+            url: '/api/main/delSingleKm',
+            type: 'json',
+            method: 'post',
+            contentType: 'application/x-www-form-urlencoded',
+            data: {
+                id: id,
+            },
+            error: function (err) {
+                console.log("appearKiList reqwest error", err);
+                message.error("删除失败!");
+            },
+            success: function (resp) {
+                message.success("删除成功!");
+            }
+        })
+    }
+
+    actionDelete = (id) => {
+        this.setState({
+            handleId: id
+        })
+        this.showModal();
+    }
+
+    showModal = () => {
+        //调用组件进行通信
+        this.refs.ShowDialog.showModal();
+    }
+
+    handleOk = (e) => {
+        // this.state.handleId;
+        this.deleteKmMain(this.state.handleId);
+    }
+
+    handleCancel = (e) => {
+        // console.log("handleCancel", this.state.handleId);
+    }
+
     componentDidMount() {
-        this.fetch();
+        this.fetchKmList();
     }
 
     render() {
@@ -222,13 +294,26 @@ class KeepMainT extends Component {
         });
 
         return (
-            <Table
-                components={components}
-                bordered
-                dataSource={this.state.data}
-                columns={columns}
-                rowClassName="editable-row"
-            />
+            <div>
+                <DialogModel
+                    ref="ShowDialog"
+                    popHandleCancel={this.handleCancel.bind(this)}
+                    popHandleOk={this.handleOk.bind(this)}
+                    infoText='确定要删除吗？!'
+                    infoTitle='信息提示'/>
+
+                <Table
+                    components={components}
+                    bordered
+                    rowKey={record => record.id}
+                    dataSource={this.state.data}
+                    pagination={this.state.pagination}
+                    columns={columns}
+                    rowClassName="editable-row"
+                />
+
+                <button>添加</button>
+            </div>
         );
     }
 }
