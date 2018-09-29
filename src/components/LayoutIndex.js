@@ -15,6 +15,7 @@ import KeepMain from '../components/KeepMain';
 import KeepInfo from "./KeepInfo";
 import PopoverShow from "./PopoverShow";
 import KeepMainT from "./KeepMainT";
+import DeleTem from "./DeleTem";
 
 const {Header, Content, Footer, Sider} = Layout;
 const SubMenu = Menu.SubMenu;
@@ -34,14 +35,14 @@ const PrivateRoute = ({component: Component, ...rest}) => (
         {...rest}
         render={props =>
             fakeAuth.isAuthenticated ? (
-            <Component {...props} />
+                <Component {...props} />
             ) : (
-            <Redirect
-            to={{
-                pathname: "/login",
-                state: {from: props.location}
-            }}
-            />
+                <Redirect
+                    to={{
+                        pathname: "/login",
+                        state: {from: props.location}
+                    }}
+                />
             )
         }
     />
@@ -80,16 +81,10 @@ class LayoutIndex extends Component {
                                     <Link to="/login">Login</Link>
                                 </Menu.Item>
                                 <Menu.Item key="5">
-                                    <Link to="/keepMain">KeepMain</Link>
+                                    <Link to="/alt">sele</Link>
                                 </Menu.Item>
                                 <Menu.Item key="6">
-                                    <Link to="/">KeepInfo</Link>
-                                </Menu.Item>
-                                <Menu.Item key="7">
-                                    <Link to="/show">show</Link>
-                                </Menu.Item>
-                                <Menu.Item key="8">
-                                    <Link to="/alt">sele</Link>
+                                    <Link to="/del">DeleTem</Link>
                                 </Menu.Item>
                             </SubMenu>
                             <SubMenu
@@ -110,15 +105,16 @@ class LayoutIndex extends Component {
                         <Content style={{margin: '0 16px'}}>
                             <Switch>
                                 <PrivateRoute exact path="/app" component={App}/>
-                                <Route exact  path="/login" component={Login}/>
-                                <PrivateRoute exact  path="/keepMain" component={KeepMain}/>
-                                <PrivateRoute exact  path="/" component={KeepInfo}/>
-                                <PrivateRoute exact  path="/show" component={PopoverShow}/>
-                                <PrivateRoute exact  path="/alt" component={KeepMainT}/>
+                                <Route exact path="/login" component={Login}/>
+                                <PrivateRoute exact path="/keepMain" component={KeepMain}/>
+                                <PrivateRoute exact path="/" component={KeepInfo}/>
+                                <PrivateRoute exact path="/show" component={PopoverShow}/>
+                                <Route exact path="/alt" component={KeepMainT}/>
+                                <Route exact path="/del" component={DeleTem}/>
                             </Switch>
                         </Content>
                         {/*<Footer style={{background: '#00ff36', textAlign: 'center'}}>*/}
-                            {/*Ant Design ©2018 Created by Ant UED*/}
+                        {/*Ant Design ©2018 Created by Ant UED*/}
                         {/*</Footer>*/}
                     </Layout>
                 </Layout>

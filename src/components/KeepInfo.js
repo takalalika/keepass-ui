@@ -12,7 +12,7 @@ class KeepInfo extends Component {
         let id = this.props.Id;
         this.setState({loading: true});
         reqwest({
-            url: 'http://127.0.0.1:8080/api/info/appearKiList',
+            url: '/api/info/appearKiList',
             type: 'json',
             method: 'post',
             contentType: 'application/x-www-form-urlencoded',

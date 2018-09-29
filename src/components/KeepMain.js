@@ -92,8 +92,8 @@ class KeepMain extends Component {
         console.log('params:', params);
         this.setState({loading: true});
         reqwest({
-            url: 'http://127.0.0.1:8080/api/main/appearKmList',
-            method: 'get',
+            url: '/api/main/appearKmList',
+            method: 'post',
             data: {
                 results: 10,
                 ...params,
